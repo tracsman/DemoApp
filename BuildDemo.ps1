@@ -10,8 +10,10 @@
 # Variable Initialization
 $SubID       = "27cafca8-b9a4-4264-b399-45d0c9cca1ab"
 $ShortRegion = "westus2"
-$CakeRGName  = "DemoCake"
-$QuiltRGName = "DemoQuilt"
+$CakeRGName  = "AnalystRG"
+$CakeAppName = "sandyscake"
+$QuiltRGName = "AnalystRG"
+$QuiltAppName = "amysappservice"
 
 # Start nicely
 Write-Host
@@ -102,12 +104,12 @@ Compress-Archive -Path $WebDir/* -DestinationPath $WebDir/wwwroot.zip -Force
 Write-Host (Get-Date)' - ' -NoNewline
 Write-Host "Creating App Service" -ForegroundColor Cyan
 # Create a web app
-try {Get-AzWebApp -ResourceGroupName $CakeRGName -Name $CakeRGName-app  -ErrorAction Stop | Out-Null
+try {Get-AzWebApp -ResourceGroupName $CakeRGName -Name $CakeAppName  -ErrorAction Stop | Out-Null
      Write-Host "  App Service exists, skipping"}
-catch {New-AzWebApp -ResourceGroupName $CakeRGName -Location $ShortRegion -Name $CakeRGName-app -AppServicePlan $CakeRGName-app-plan | Out-Null}
+catch {New-AzWebApp -ResourceGroupName $CakeRGName -Location $ShortRegion -Name $CakeAppName -AppServicePlan $CakeAppName"plan" | Out-Null}
 
 # Publish the web app
-Publish-AzWebApp -ResourceGroupName $CakeRGName -Name $CakeRGName-app -ArchivePath $WebDir/wwwroot.zip -Force | Out-Null
+Publish-AzWebApp -ResourceGroupName $CakeRGName -Name $CakeAppName -ArchivePath $WebDir/wwwroot.zip -Force | Out-Null
 
 # 3. Create Quilt Website
 Write-Host (Get-Date)' - ' -NoNewline
@@ -173,8 +175,8 @@ $WebConfig ='<?xml version="1.0" encoding="utf-8"?>
 </configuration>'
 
 $MainPage | Out-File -FilePath "$WebDir\default.aspx" -Encoding ascii
-if ($PSVersionTable.PSVersion.Major -eq 5) {[System.Convert]::FromBase64String($CakeImage) | Set-Content "$WebDir\quilts.jpg" -Encoding Byte | Out-Null}
-else {[System.Convert]::FromBase64String($CakeImage) | Set-Content "$WebDir\quilts.jpg" -AsByteStream | Out-Null}
+if ($PSVersionTable.PSVersion.Major -eq 5) {[System.Convert]::FromBase64String($QuiltImage) | Set-Content "$WebDir\quilts.jpg" -Encoding Byte | Out-Null}
+else {[System.Convert]::FromBase64String($QuiltImage) | Set-Content "$WebDir\quilts.jpg" -AsByteStream | Out-Null}
 $WebConfig | Out-File -FilePath "$WebDir\web.config" -Encoding ascii
 
 # Compress files for upload to App Service
@@ -185,12 +187,12 @@ Write-Host (Get-Date)' - ' -NoNewline
 Write-Host "Creating App Service" -ForegroundColor Cyan
 
 # Create a web app
-try {Get-AzWebApp -ResourceGroupName $QuiltRGName -Name $QuiltRGName-app -ErrorAction Stop | Out-Null
+try {Get-AzWebApp -ResourceGroupName $QuiltRGName -Name $QuiltAppName -ErrorAction Stop | Out-Null
      Write-Host "  App Service exists, skipping"}
-catch {New-AzWebApp -ResourceGroupName $QuiltRGName -Location $ShortRegion -Name $QuiltRGName-app -AppServicePlan $QuiltRGName-app-plan | Out-Null}
+catch {New-AzWebApp -ResourceGroupName $QuiltRGName -Location $ShortRegion -Name $QuiltAppName -AppServicePlan $QuiltAppName"plan" | Out-Null}
 
 # Publish the web app
-Publish-AzWebApp -ResourceGroupName $QuiltRGName -Name $QuiltRGName-app -ArchivePath $WebDir/wwwroot.zip -Force | Out-Null
+Publish-AzWebApp -ResourceGroupName $QuiltRGName -Name $QuiltAppName -ArchivePath $WebDir/wwwroot.zip -Force | Out-Null
 
 # End Nicely
 Write-Host (Get-Date)' - ' -NoNewline
